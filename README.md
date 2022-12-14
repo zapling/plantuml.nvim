@@ -8,14 +8,16 @@ Neovim helper for working with PlantUML files.
 
 # Requirements
 
+- Nvim (only tested on `0.8`)
 - Python3
 - Docker
+- Docker img (`docker pull ghcr.io/zapling/plantuml-docker:latest`)
 
 # Installation
 
 ```lua
 -- packer.nvim
-use {'zapling/plantuml.nvim'}
+use {'zapling/plantuml.nvim', requires = {'nvim-lua/plenary.nvim'}}
 ```
 
 # Usage
@@ -24,4 +26,6 @@ use {'zapling/plantuml.nvim'}
 require('plantuml').setup()
 ```
 
-Run `:Plantuml` to start the watcher, running `:w` on a `.puml` file will now generate and serve.
+`:Plantuml` to start the watcher, saving a `.puml` will now generate file and serve it
+
+`:Plantuml stop` will stop the watcher
