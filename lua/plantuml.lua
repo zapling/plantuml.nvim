@@ -50,7 +50,7 @@ local function generate_diagram()
     end
 
     local filepath = vim.fn.expand('%:p')
-    local command = 'cat ' .. filepath .. ' | docker run --rm -i ghcr.io/robbell/plantuml-docker/plantuml-docker:latest > /tmp/plantuml_nvim/output.png'
+    local command = 'cat ' .. filepath .. ' | docker run --rm -i ghcr.io/zapling/plantuml-docker:latest > /tmp/plantuml_nvim/output.png'
 
     vim.fn.jobstart(command)
 end
