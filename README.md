@@ -23,7 +23,9 @@ use {'zapling/plantuml.nvim', requires = {'nvim-lua/plenary.nvim'}}
 # Usage
 
 ```lua
-require('plantuml').setup()
+require('plantuml').setup({
+    tmp_dir = '/tmp/plantuml_nvim'
+})
 ```
 
 `:Plantuml` to start the watcher, saving a `.puml` will now generate file and serve it

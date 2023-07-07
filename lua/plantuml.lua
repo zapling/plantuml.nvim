@@ -1,9 +1,14 @@
 local Job = require('plenary.job')
 
+local default_config = {
+    tmp_dir = '/tmp/plantuml_nvim'
+}
+
 local M = {}
 
+M._config = default_config
+
 local webserver_job = nil
-local tmp_dir = '/tmp/plantuml_nvim'
 
 local index_html = [[
 <!DOCTYPE html>
@@ -33,15 +38,16 @@ local function start_webserver()
     webserver_job = Job:new({
         command = "python3",
         args = {"-m", "http.server"},
-        cwd = tmp_dir,
+        cwd = M._config.tmp_dir,
     })
 
     webserver_job:start()
 end
 
 local function setup_tmp_dir()
-    vim.fn.jobstart('[[ ! -d /tmp/plantuml_nvim ]] && mkdir /tmp/plantuml_nvim')
-    vim.fn.writefile(vim.split(index_html, '\n'), '/tmp/plantuml_nvim/index.html')
+    local mkdir_job = vim.fn.jobstart(string.format('[[ ! -d %s ]] && mkdir %s', M._config.tmp_dir, M._config.tmp_dir))
+    vim.fn.jobwait({mkdir_job}, 1000)
+    vim.fn.writefile(vim.split(index_html, '\n'), string.format('%s/index.html', M._config.tmp_dir))
 end
 
 local function generate_diagram()
@@ -50,7 +56,7 @@ local function generate_diagram()
     end
 
     local filepath = vim.fn.expand('%:p')
-    local command = 'cat ' .. filepath .. ' | docker run --rm -i ghcr.io/zapling/plantuml-docker:latest > /tmp/plantuml_nvim/output.png'
+    local command = string.format('cat %s | docker run --rm -i ghcr.io/zapling/plantuml-docker:latest > %s/output.png', filepath, M._config.tmp_dir)
 
     vim.fn.jobstart(command)
 end
@@ -68,7 +74,9 @@ local function entrypoint(opts)
     end
 end
 
-function M.setup()
+function M.setup(cfg)
+    M._config = vim.tbl_deep_extend("force", M._config, cfg or {})
+
     vim.api.nvim_create_user_command(
         "Plantuml",
         function(opts) entrypoint(opts) end,
